@@ -1,26 +1,39 @@
-const db = require('../dataBase/users')
+const User = require('../dataBase/User');
 
 module.exports = {
-    getUsers: (req, res) => {
-        res.json(db);
+    getUsers: async (req, res) => {
+        try {
+            const users = await User.find();
+
+            res.json(users);
+        } catch (e) {
+            res.json(e);
+        }
+
     },
 
-    getUserById: (req, res) => {
+    getUserById: async (req, res) => {
         const { user_id } = req.params;
-        const user = db[user_id];
+        const user = await User.findById(user_id);
 
-        res.json({ user });
+        res.json(user);
     },
 
-    createUser: (req, res) => {
-        console.log(req.body);
+    createUser: async (req, res) => {
+        try {
+            console.log('*************************************************');
+            console.log(req.body);
+            console.log('*************************************************');
 
-        db.push({...req.body, id: db.length + 1})
+            const newUser = await User.create(req.body);
 
-        res.json(db);
+            res.json(newUser);
+        } catch (e) {
+            res.json(e);
+        }
     },
 
     updateUser: (req, res) => {
         res.json('YODATE USER');
     }
-}
+};
