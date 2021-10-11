@@ -3,21 +3,27 @@ const passwordService = require('../service/password.service');
 const userUtil = require('../util/user.util');
 
 module.exports = {
-    getUsers: async (req, res) => {
+    getUsers: async (req, res, next) => {
         try {
             const users = await User.find();
 
             res.json(users);
         } catch (e) {
-            res.json(e);
+            next(e);
         }
 
     },
 
-    getUserById: async (req, res) => {
+    getUserById: async (req, res, next) => {
         try {
             const { user_id } = req.params;
-            const user = await User.findById(user_id).lean();
+            const user = await User
+                .findById(user_id)
+                // .select('+password')
+                // .select('-email')
+                .lean();
+
+            // isPasswordMatched()
 
             console.log('_____________________________________________');
             console.log(user);
@@ -31,11 +37,11 @@ module.exports = {
 
             res.json(normalizedUser);
         } catch (e) {
-            res.json(e.message);
+            next(e);
         }
     },
 
-    createUser: async (req, res) => {
+    createUser: async (req, res, next) => {
         try {
             console.log('*************************************************');
             console.log(req.body);
@@ -52,7 +58,7 @@ module.exports = {
 
             res.json(newUser);
         } catch (e) {
-            res.json(e);
+            next(e);
         }
     },
 
