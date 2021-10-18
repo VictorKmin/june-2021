@@ -1,5 +1,6 @@
+const { WELCOME } = require("../configs/email-action.enum");
 const User = require('../dataBase/User');
-const passwordService = require('../service/password.service');
+const { passwordService, emailService } = require('../service');
 const userUtil = require('../util/user.util');
 
 module.exports = {
@@ -49,10 +50,7 @@ module.exports = {
             
             const hashedPassword = await passwordService.hash(req.body.password);
 
-            console.log('_____hashedPassword_____');
-            console.log(hashedPassword);
-            console.log('_____hashedPassword_____');
-            
+            await emailService.sendMail(req.body.email, WELCOME, { userName: req.body.name });
             
             const newUser = await User.create({ ...req.body, password: hashedPassword });
 
