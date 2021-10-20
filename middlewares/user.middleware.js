@@ -24,8 +24,7 @@ module.exports = {
         try {
             const userByEmail = await User
                 .findOne({ email: req.body.email })
-                .select('+password')
-                .lean();
+                .select('+password');
 
             if (!userByEmail) {
                 throw new ErrorHandler('Wrong meail or password', 418);

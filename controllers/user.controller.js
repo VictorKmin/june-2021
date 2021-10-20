@@ -1,6 +1,6 @@
 const { WELCOME } = require("../configs/email-action.enum");
 const User = require('../dataBase/User');
-const { passwordService, emailService } = require('../service');
+const { emailService } = require('../service');
 const userUtil = require('../util/user.util');
 
 module.exports = {
@@ -19,16 +19,12 @@ module.exports = {
         try {
             const { user_id } = req.params;
             const user = await User
-                .findById(user_id)
+                .findById(user_id);
                 // .select('+password')
                 // .select('-email')
-                .lean();
 
-            // isPasswordMatched()
-
-            console.log('_____________________________________________');
-            console.log(user);
-            console.log('_____________________________________________');
+            // user.randomMethod();
+            // User.testStatic(222);
 
             const normalizedUser = userUtil.userNormalizator(user);
 
@@ -48,11 +44,9 @@ module.exports = {
             console.log(req.body);
             console.log('*************************************************');
             
-            const hashedPassword = await passwordService.hash(req.body.password);
-
             await emailService.sendMail(req.body.email, WELCOME, { userName: req.body.name });
             
-            const newUser = await User.create({ ...req.body, password: hashedPassword });
+            const newUser = await User.createUserWithHashPassword(req.body);
 
             res.json(newUser);
         } catch (e) {

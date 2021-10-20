@@ -12,5 +12,9 @@ module.exports = {
     [emailActionsEnum.USER_BLOCKED]: {
         templateName: 'us-b',
         subject: 'oops'
+    },
+    [emailActionsEnum.FORGOT_PASSWORD]: {
+        templateName: 'forgot-password',
+        subject: 'Everybody forgot something. Dont worry )'
     }
 };

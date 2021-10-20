@@ -11,10 +11,12 @@ router.post(
         ADMIN,
         USER
     ]),
-    authMiddleware.isPasswordsMatched,
     authController.login
 );
 router.post('/logout', authController.logout);
-router.post('/refresh', authMiddleware.checkRefreshToken, authController.login);
+router.post('/refresh', authMiddleware.checkRefreshToken, authController.refreshToken);
+
+router.post('/password/forgot', authController.sendMailForgotPassword);
+router.put('/password/forgot', authController.setNewPasswordAfterForgot);
 
 module.exports = router;
