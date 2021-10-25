@@ -1,32 +1,20 @@
 const { Schema, model } = require('mongoose');
 
 const userRoles = require('../configs/user-roles.enum');
-const {passwordService} = require("../service");
+const passwordService = require("../service/password.service");
+const MD = require("./ModelDefinition");
 
 const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    email: {
-        type: String,
-        unique: true,
-        required: true,
-        trim: true
-    },
-    password: {
-        type: String,
-        required: true,
-        trim: true,
-        // select: false
-    },
+    ...MD.NEP,
     role: {
         type: String,
         default: userRoles.USER,
         enum: Object.values(userRoles)
+    },
+    age: {
+        type: Number,
     }
-}, { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } });
+}, MD.gentelmenClub);
 
 userSchema.virtual('fullName').get(function() {
     return `${this.name} ${this.role} HA-HA`;

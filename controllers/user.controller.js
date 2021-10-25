@@ -1,13 +1,13 @@
 const { WELCOME } = require("../configs/email-action.enum");
 const User = require('../dataBase/User');
-const { emailService } = require('../service');
+const { emailService, userService } = require('../service');
 const userUtil = require('../util/user.util');
 
 module.exports = {
     getUsers: async (req, res, next) => {
         try {
-            const users = await User.find();
 
+            const users = await userService.getAllUsers(req.query);
             res.json(users);
         } catch (e) {
             next(e);
