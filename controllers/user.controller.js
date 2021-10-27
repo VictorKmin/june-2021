@@ -1,6 +1,6 @@
 const { WELCOME } = require("../configs/email-action.enum");
 const User = require('../dataBase/User');
-const { emailService, userService } = require('../service');
+const { emailService, s3Service, userService } = require('../service');
 const userUtil = require('../util/user.util');
 
 module.exports = {
@@ -40,13 +40,15 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
-            console.log('*************************************************');
-            console.log(req.body);
-            console.log('*************************************************');
-            
             await emailService.sendMail(req.body.email, WELCOME, { userName: req.body.name });
             
-            const newUser = await User.createUserWithHashPassword(req.body);
+            let newUser = await User.createUserWithHashPassword(req.body);
+
+            if (req.files && req.files.avatar) {
+                const uploadInfo = await s3Service.uploadImage(req.files.avatar, 'users', newUser._id.toString());
+
+                newUser = await User.findByIdAndUpdate(newUser._id, { avatar: uploadInfo.Location }, { new: true });
+            }
 
             res.json(newUser);
         } catch (e) {

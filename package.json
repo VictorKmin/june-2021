@@ -2,22 +2,26 @@
   "name": "june-2021",
   "version": "1.1.0",
   "dependencies": {
+    "aws-sdk": "^2.1015.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "email-templates": "^8.0.8",
     "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
     "express-rate-limit": "^5.5.0",
     "helmet": "^4.6.0",
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.9",
+    "nanoid": "^3.1.30",
     "node-cron": "^3.0.0",
     "nodemailer": "^6.7.0",
     "pm2": "^5.1.2",
     "pug": "^3.0.2",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.32.0",

@@ -40,11 +40,6 @@ module.exports = {
 
     isUserBodyValid: (req, res, next) => {
         try {
-
-            console.log('_______');
-            console.log(req.body);
-            console.log('_______');
-
             const { error, value } = userValidator.createUserValidator.validate(req.body);
 
             if (error) {
@@ -62,10 +57,6 @@ module.exports = {
     checkUserRole: (roleArr = []) => (req, res, next) => {
         try {
             const { role } = req.user;
-
-            console.log('_____________________________________');
-            console.log(role);
-            console.log('_____________________________________');
 
             if (!roleArr.includes(role)) {
                 throw new Error('Access denied');
