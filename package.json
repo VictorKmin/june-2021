@@ -1,6 +1,9 @@
 {
   "name": "june-2021",
   "version": "1.1.0",
+  "scripts": {
+    "start": "pm2 kill && pm2 start app.js"
+  },
   "dependencies": {
     "aws-sdk": "^2.1015.0",
     "bcrypt": "^5.0.1",
