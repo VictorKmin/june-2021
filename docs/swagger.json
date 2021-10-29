@@ -107,6 +107,45 @@
           }
         }
       }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["Users"],
+        "operationId": "getSingleUser",
+        "description": "This is how to create user",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "default": "6787ad8dadakad",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User was created",
+            "schema": {
+              "$ref": "#/definitions/singleUser"
+            }
+          },
+          "400": {
+            "description": "Just an error",
+            "schema": {
+              "properties": {
+                "msg": {
+                  "type": "string",
+                  "example": "SOmthisng went worng"
+                },
+                "code": {
+                  "type": "number",
+                  "example": 400
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

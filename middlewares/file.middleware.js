@@ -1,5 +1,6 @@
 const {PHOTOS_MIMETYPES, PHOTO_MAX_SIZE} = require("../configs/constants");
 const ErrorHandler = require("../errors/ErrorHandler");
+
 module.exports = {
     checkUserAvatar: (req, res, next) => {
         try {
