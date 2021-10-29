@@ -5,8 +5,7 @@ const { authMiddleware, fileMiddleware, userMiddleware } = require('../middlewar
 
 router.get('/', userController.getUsers);
 
-router.get('/:user_id',
-    userController.getUserById);
+router.get('/:user_id', userController.getUserById);
 
 router.post(
     '/',

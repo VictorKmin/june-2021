@@ -1,7 +1,10 @@
+const ObjectId = require('mongoose').Types.ObjectId;
+
 const { WELCOME } = require("../configs/email-action.enum");
 const User = require('../dataBase/User');
 const { emailService, s3Service, userService } = require('../service');
 const userUtil = require('../util/user.util');
+const ErrorHandler = require("../errors/ErrorHandler");
 
 module.exports = {
     getUsers: async (req, res, next) => {
@@ -17,6 +20,10 @@ module.exports = {
 
     getUserById: async (req, res, next) => {
         try {
+            if (!ObjectId.isValid(req.params.user_id)) {
+                throw new Error('Not valid user Id');
+            }
+
             const { user_id } = req.params;
             const user = await User
                 .findById(user_id);
@@ -25,6 +32,10 @@ module.exports = {
 
             // user.randomMethod();
             // User.testStatic(222);
+
+            if (!user) {
+                throw new ErrorHandler('User is not found', 404);
+            }
 
             const normalizedUser = userUtil.userNormalizator(user);
 
