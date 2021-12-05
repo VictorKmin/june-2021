@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--    <script type='text/javascript' src='http://localhost:5000/socket.io/socket.io.js'></script>-->
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<button id="showChats"> SHOW CHAT LIST</button>
+
+<form name="newChatForm">
+    <input type="text" name="title" placeholder="Chat name">
+    <input type="submit" value="Create CHat">
+</form>
+
+<div id="chats">
+
+</div>
+
+
+<script>
+    const user_id = localStorage.getItem('user_id');
+    let socket = io('http://localhost:5000', { query: `user_id=${user_id}&token=HELLO` });
+
+    const showChats = document.getElementById('showChats');
+    const newChatForm = document.forms.newChatForm;
+
+    newChatForm.onsubmit = (e) => {
+        console.log('HLLLLLLOOO');
+        e.preventDefault();
+
+        const title = newChatForm.title.value;
+
+        socket.emit('createChat', { title });
+    }
+
+
+    showChats.onclick = () => {
+        socket.emit('getChatList');
+    }
+
+    socket.on('sendChatList', (conversations) => {
+        const chatDiv = document.getElementById('chats');
+        chatDiv.innerHTML = '';
+
+        conversations.forEach(conversation => {
+            const singleChatDiv = document.createElement('div');
+            singleChatDiv.innerText = conversation.title;
+            singleChatDiv.style.marginTop = '20px';
+
+            const btnToJoin = document.createElement('button');
+            btnToJoin.innerText = `Join ${conversation._id}`;
+
+            btnToJoin.onclick = (e) => {
+                const [,chatId] = e.target.innerText.split(' ');
+                socket.emit('joinChat', { roomId: chatId })
+            }
+
+            singleChatDiv.appendChild(btnToJoin);
+
+            chatDiv.appendChild(singleChatDiv);
+        })
+    });
+
+    socket.on('sendMessageList', (data) => {
+        console.log('sendMessageList');
+        console.log(data);
+        console.log('sendMessageList');
+    });
+
+    socket.on('newUserJoin', message => {
+        document.write(message)
+    })
+
+</script>
+
+
+
+</body>
+</html>

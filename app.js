@@ -1,9 +1,11 @@
+const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const fileUpload = require('express-fileupload');
 const helmet = require('helmet');
+const socketIo = require('socket.io');
 const swaggerUI = require('swagger-ui-express');
 require('dotenv').config();
 
@@ -14,6 +16,69 @@ const checkDefaultData = require('./util/default-data.util');
 const swaggerJson = require('./docs/swagger.json');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: { origin: '*' }
+});
+
+const conversationController = require('./controllers/socket/conversation');
+const messageController = require('./controllers/socket/message');
+
+// // Middleware runs only on socket connection
+// io.use((socket, next) => {
+//     const { handshake: { query } } = socket;
+//     if (!query.user_id || query.user_id === 'null') {
+//         console.log('ERROR');
+//         next(new Error('Not registerd'));
+//         return;
+//     }
+//
+//     next();
+//     console.log('90909090______________________________');
+//     console.log(socket);
+//     console.log('90909090______________________________');
+// });
+
+io.on('connection', (socket) => {
+    const { id, handshake } = socket;
+
+    console.log(id, 'socket ID');
+    console.log(handshake.query.token, 'TOKEN');
+    console.log(handshake.query.user_id, 'USER ID');
+    const extraData = { token: handshake.query.token, user_id: handshake.query.user_id, socketId: id };
+
+    socket.on('getChatList', async () => {
+        const conversations = await conversationController.getConversations();
+
+        // socket.to(id).emit('sendChatList', conversations);
+        //
+        socket.emit('sendChatList', conversations);
+    });
+
+    socket.on('createChat', async (socketData) => {
+        await conversationController.createConversation({ ...socketData, ...extraData });
+        const conversations = await conversationController.getConversations();
+
+        io.sockets.emit('sendChatList', conversations);
+    });
+
+    socket.on('joinChat', async (socketData) => {
+        socket.join(socketData.roomId);
+
+        const messages = await messageController.getMessageList(socketData.roomId);
+
+        // https://socket.io/docs/v4/broadcasting-events/
+
+        // SEND TO ALL ROOM MEMBERS. EVEN TO EMITER
+        // io.sockets.to(socketData.roomId).emit('newUserJoin', 'New user join. ');
+
+        // broadcast to all room members but not to sender
+        socket.broadcast.to(socketData.roomId).emit('newUserJoin', 'New user join. ');
+
+        // Send event for emiter
+        socket.emit('sendMessageList', messages);
+    });
+});
 
 mongoose.connect(MONGO_CONNECT_URL).then(() => {
     console.log('Mongo connected successfully');
